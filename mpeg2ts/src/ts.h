@@ -23,8 +23,8 @@
  * @author Rafael Antoniello
  */
 
-#ifndef SPMPEG2TS_SRC_TS_H_
-#define SPMPEG2TS_SRC_TS_H_
+#ifndef STREAMPROCESSORS_MPEG2TS_SRC_TS_H_
+#define STREAMPROCESSORS_MPEG2TS_SRC_TS_H_
 
 #include <sys/types.h>
 #include <inttypes.h>
@@ -41,10 +41,13 @@
 #define TS_CC_UNDEF 0xFF
 
 /**
- * //TODO:
+ * Maximum valid value for the Packet IDentifier (PID).
  */
 #define TS_MAX_PID_VAL 0x1FFF
 
+/**
+ * Get PID value from binary MPEG2-TS packet.
+ */
 #define TS_BUF_GET_PID(TS_PKT_POINTER) \
 	(uint16_t)\
 	((\
@@ -52,12 +55,21 @@
 	 (((uint8_t*)(TS_PKT_POINTER))[2])\
     )& 0x1FFF)
 
+/**
+ * Get 'unit start indicator' field value from binary MPEG2-TS packet.
+ */
 #define TS_BUF_GET_START_INDICATOR(TS_PKT_POINTER) \
 	(uint8_t)((((uint8_t*)(TS_PKT_POINTER))[1])& 0x40)
 
+/**
+ * Get 'payload flag' field value from binary MPEG2-TS packet.
+ */
 #define TS_BUF_GET_PAYLOAD_FLAG(TS_PKT_POINTER) \
 	(uint8_t)((((uint8_t*)(TS_PKT_POINTER))[3])& 0x10)
 
+/**
+ * Get 'continuity counter' field value from binary MPEG2-TS packet.
+ */
 #define TS_BUF_GET_CC(TS_PKT_POINTER) \
 	(uint8_t)((((uint8_t*)(TS_PKT_POINTER))[3])& 0x0F)
 
@@ -187,55 +199,65 @@ typedef struct ts_ctx_s {
 	 * Payload allocation size in bytes
 	 */
 	uint8_t payload_size; // max. value is '188- 4'
-	/**
-	 * Non-standard: Payload composition from consecutive TS packets.
-	 * Used for TS repackaging purposes.
-	 */
-	uint16_t payload_size_accum;
 } ts_ctx_t;
 
 /* **** Prototypes **** */
 
 /**
- * //TODO
+ * Allocate an MPEG2-TS context structure. Structure is initialized to '0s'.
+ * @return Newly allocated MPEG2-TS context structure.
  */
 ts_ctx_t* ts_ctx_allocate();
 
 /**
- * //TODO
+ * Make a copy of the given MPEG2-TS context structure.
+ * @param ts_ctx Pointer to the MPEG2-TS context structure to copy.
+ * @return New MPEG2-TS context structure replica.
  */
 ts_ctx_t* ts_ctx_dup(const ts_ctx_t* ts_ctx);
 
 /**
- * //TODO
+ * Trace MPEG2-TS context structure.
+ * @param ts_ctx Pointer to the MPEG2-TS context structure to trace.
  */
 void ts_ctx_trace(const ts_ctx_t *ts_ctx);
 
 /**
- * Release MPEG-2 TS context structure.
- * @param ref_ts_ctx Reference to the pointer to the MPEG-2 TS context
+ * Release MPEG2-TS context structure.
+ * @param ref_ts_ctx Reference to the pointer to the MPEG2-TS context
  * structure to release.
  */
 void ts_ctx_release(ts_ctx_t **ref_ts_ctx);
 
 /**
- * //TODO
+ * Allocate a MPEG2-TS Adaptation Field context structure.
+ * Structure is initialized to '0s'.
+ * @return Newly allocated MPEG2-TS Adaptation Field context structure.
  */
 ts_af_ctx_t* ts_af_ctx_allocate();
 
 /**
- * //TODO
+ * Make a copy of the given MPEG2-TS Adaptation Field context structure.
+ * @param ts_af_ctx Pointer to the MPEG2-TS Adaptation Field context structure
+ * to copy.
+ * @return New MPEG2-TS Adaptation Field context structure replica.
  */
 ts_af_ctx_t* ts_af_ctx_dup(const ts_af_ctx_t* ts_af_ctx);
 
 /**
- * //TODO
+ * Release MPEG2-TS Adaptation Field context structure.
+ * @param ref_ts_af_ctx Reference to the pointer to the MPEG2-TS Adaptation
+ * Field context structure to release.
  */
 void ts_af_ctx_release(ts_af_ctx_t **ref_ts_af_ctx);
 
 /**
- * //TODO
+ * Get MPEG2-TS header size (including the adaptation field if present).
+ * @param ts_ctx Pointer to the MPEG2-TS context structure to parse.
+ * @param hdr_size Pointer to an unsigned 8-bit integer in which the computed
+ * header size value will be returned.
+ * @return Status code (refer to 'stat_codes_ctx_t' type).
  */
 int ts_get_header_size(const ts_ctx_t* ts_ctx, uint8_t *hdr_size);
 
-#endif /* SPMPEG2TS_SRC_TS_H_ */
+#endif /* STREAMPROCESSORS_MPEG2TS_SRC_TS_H_ */
