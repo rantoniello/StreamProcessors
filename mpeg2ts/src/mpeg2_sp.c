@@ -162,6 +162,9 @@ typedef struct mpeg2_sp_ctx_s {
 static proc_ctx_t* mpeg2_sp_open(const proc_if_t *proc_if,
 		const char *settings_str, log_ctx_t *log_ctx, va_list arg);
 static void mpeg2_sp_close(proc_ctx_t **ref_proc_ctx);
+static int mpeg2_sp_rest_put(proc_ctx_t *proc_ctx, const char *str);
+static int mpeg2_sp_rest_get(proc_ctx_t *proc_ctx,
+		const proc_if_rest_fmt_t rest_fmt, void **ref_reponse);
 
 static int mpeg2_sp_settings_ctx_init(
 		volatile mpeg2_sp_settings_ctx_t *mpeg2_sp_settings_ctx,
@@ -251,9 +254,7 @@ static proc_ctx_t* mpeg2_sp_open(const proc_if_t *proc_if,
 		LOGE("Local address *MUST* be specified in configuration file\n");
 		goto end;
 	}
-	for(id= 0, i= 0, p= host_ipv4_addr;
-			i< 4;
-			i++, p= strchr(p, '.')+ 1) {
+	for(id= 0, i= 0, p= host_ipv4_addr; i< 4; i++, p= strchr(p, '.')+ 1) {
 		if(p== NULL || strlen(p)== 0) {
 			LOGE("Review 'local address' specified in configuration file\n");
 			goto end;
@@ -398,6 +399,114 @@ static void mpeg2_sp_close(proc_ctx_t **ref_proc_ctx)
 	/* Release context structure */
 	free(mpeg2_sp_ctx);
 	*ref_proc_ctx= NULL;
+}
+
+/**
+ * Implements the proc_if_s::rest_put callback.
+ * See .proc_if.h for further details.
+ */
+static int mpeg2_sp_rest_put(proc_ctx_t *proc_ctx, const char *str)
+{
+	int ret_code;
+	mpeg2_sp_ctx_t *mpeg2_sp_ctx= NULL;
+	volatile mpeg2_sp_settings_ctx_t *mpeg2_sp_settings_ctx= NULL;
+	LOG_CTX_INIT(NULL);
+
+	/* Check arguments */
+	CHECK_DO(proc_ctx!= NULL, return STAT_ERROR);
+	CHECK_DO(str!= NULL, return STAT_ERROR);
+
+	LOG_CTX_SET(proc_ctx->log_ctx);
+
+	/* PUT specific MPEG2 stream processor settings */
+	// Reserved for future use
+
+	return STAT_SUCCESS;
+}
+
+/**
+ * Implements the proc_if_s::rest_get callback.
+ * See .proc_if.h for further details.
+ */
+static int mpeg2_sp_rest_get(proc_ctx_t *proc_ctx,
+		const proc_if_rest_fmt_t rest_fmt, void **ref_reponse)
+{
+	int ret_code, end_code= STAT_ERROR;
+	mpeg2_sp_ctx_t *mpeg2_sp_ctx= NULL;
+	volatile mpeg2_sp_settings_ctx_t *mpeg2_sp_settings_ctx= NULL;
+	cJSON *cjson_rest= NULL, *cjson_settings= NULL;
+	//cJSON *cjson_aux= NULL; // Do not release // Reserved for future use
+	LOG_CTX_INIT(NULL);
+
+	/* Check arguments */
+	CHECK_DO(proc_ctx!= NULL, return STAT_ERROR);
+	CHECK_DO(rest_fmt< PROC_IF_REST_FMT_ENUM_MAX, return STAT_ERROR);
+	CHECK_DO(ref_reponse!= NULL, return STAT_ERROR);
+
+	LOG_CTX_SET(proc_ctx->log_ctx);
+
+	*ref_reponse= NULL;
+
+	/* Create cJSON tree root object */
+	cjson_rest= cJSON_CreateObject();
+	CHECK_DO(cjson_rest!= NULL, goto end);
+
+	/* JSON string to be returned:
+	 * {
+	 *     "settings":
+	 *     {
+	 *         ...
+	 *     },
+	 *     ... // Reserved for future use
+	 * }
+	 */
+
+	/* Create cJSON settings object */
+	cjson_settings= cJSON_CreateObject();
+	CHECK_DO(cjson_settings!= NULL, goto end);
+
+	/* GET specific MPEG2 stream processor settings */
+	// Reserved for future use: attach to 'cjson_settings' (should be != NULL)
+
+	/* Attach settings object to REST response */
+	cJSON_AddItemToObject(cjson_rest, "settings", cjson_settings);
+	cjson_settings= NULL; // Attached; avoid double referencing
+
+	/* **** Attach data to REST response **** */
+
+	// Reserved for future use
+	/* Example:
+	 * cjson_aux= cJSON_CreateNumber((double)avcodecctx->var1);
+	 * CHECK_DO(cjson_aux!= NULL, goto end);
+	 * cJSON_AddItemToObject(cjson_rest, "var1_name", cjson_aux);
+	 */
+
+	// Reserved for future use: set other data values here...
+
+	/* Format response to be returned */
+	switch(rest_fmt) {
+	case PROC_IF_REST_FMT_CHAR:
+		/* Print cJSON structure data to char string */
+		*ref_reponse= (void*)CJSON_PRINT(cjson_rest);
+		CHECK_DO(*ref_reponse!= NULL && strlen((char*)*ref_reponse)> 0,
+				goto end);
+		break;
+	case PROC_IF_REST_FMT_CJSON:
+		*ref_reponse= (void*)cjson_rest;
+		cjson_rest= NULL; // Avoid double referencing
+		break;
+	default:
+		LOGE("Unknown format requested for processor REST\n");
+		goto end;
+	}
+
+	end_code= STAT_SUCCESS;
+end:
+	if(cjson_settings!= NULL)
+		cJSON_Delete(cjson_settings);
+	if(cjson_rest!= NULL)
+		cJSON_Delete(cjson_rest);
+	return end_code;
 }
 
 /**
@@ -558,6 +667,7 @@ static void* distr_thr(void *t)
 		    	proc_frame_ctx.proc_sample_fmt= PROC_IF_FMT_UNDEF;
 		    	proc_frame_ctx.pts= -1;
 		    	proc_frame_ctx.dts= -1;
+		    	proc_frame_ctx.es_id= pid; // pass PID as stream ID!.
 		    	ret_code= procs_send_frame(mpeg2_sp_ctx->procs_ctx, proc_id,
 		    			&proc_frame_ctx);
 #ifdef PROFILE_DISTR_THR

@@ -296,7 +296,7 @@ int ts_enc_pcrrestamp(void *buf, int64_t pcr_base, int64_t pcr_ext)
 		ts_buf[11]= pcr_ext& 0xFF;
 		return STAT_SUCCESS;
 	}
-	return NOTMODIFIED;
+	return STAT_NOTMODIFIED;
 }
 
 int ts_enc_add_adaptation_field_stuffing(ts_ctx_t *ts_ctx, uint8_t stuff_size,

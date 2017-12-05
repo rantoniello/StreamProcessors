@@ -43,7 +43,7 @@ extern "C" {
 #include <libmediaprocs/proc_if.h>
 #include <libmediaprocs/procs.h>
 #include <libmediaprocs/proc.h>
-#include <libmediaprocsmpeg2ts/prog_proc.h>
+#include <libstreamprocsmpeg2ts/prog_proc.h>
 }
 
 #define ENABLE_DEBUG_LOGS //uncomment to trace logs

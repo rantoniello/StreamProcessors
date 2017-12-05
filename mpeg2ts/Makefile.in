@@ -23,7 +23,7 @@ else
 endif
 
 LIBS= -lm -ldl -lpthread
-LIBS+= -L$(LIB_DIR) -luriparser -lcjson -lconfig
+LIBS+= -L$(LIB_DIR) -luriparser -lcjson -lconfig -lmediaprocscrc
 LIBS+= -lmediaprocsutils -lmediaprocs
 
 _OBJ = $(wildcard $(SRCDIR)/*.c)
