@@ -30,7 +30,7 @@ endif
 export SO_NAME
 
 ##### BASIC COMMON CFLAGS #####
-CFLAGS+=-D_BASE_PATH=\"$(CONFIG_LINUX_MK_PATH)\"
+CFLAGS+=-D_BASE_PATH="\"$(CONFIG_LINUX_MK_PATH)\""
 CFLAGS+=-Wall -O3
 #CFLAGS+=-Wall -g -O0
 LBITS := $(shell getconf LONG_BIT)
