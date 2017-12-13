@@ -34,4 +34,6 @@ clean:
 	@rm -rf $(PREFIX)/share/man/man1/$(LIBNAME)*
 	@rm -rf $(PREFIX)/share/man/man7/$(LIBNAME)*
 	@rm -rf $(BUILD_DIR)
-
+	@rm -f  $(SOURCE_DIR)/YASM-VERSION-FILE $(SOURCE_DIR)/YASM-VERSION.h
+	@rm -f  $(SOURCE_DIR)/autogen_yasm_modif.sh $(SOURCE_DIR)/YASM-VERSION.h
+	@rm -f  $(SOURCE_DIR)/config/test-driver
