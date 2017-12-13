@@ -68,7 +68,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 # ‘$*’ takes exactly the value of the substring matched by ‘%’ in the 
 # correspondent target itself. 
 %_: 
-	make $*_ffmpeg_lhe
+	make $*_ffmpeg
 	make $*_unittest-cpp
 	make $*_cjson
 	make $*_uriparser
@@ -78,6 +78,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 	make $*_live555
 	make $*_libconfig
 	make $*_crc
+	make $*_mongo-c-driver
 	make $*_utils
 	make $*_procs
 	make $*_transcoders
@@ -91,7 +92,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 # The same applies to the libraries below (e.g. "make x86_procs", 
 # "make x86_codecs", ...)
 
-%_ffmpeg_lhe:
+%_ffmpeg:
 	make $*_x264
 	make $*_lame
 	$(MAKE_MACRO)
@@ -112,7 +113,8 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 %_uriparser \
 %_live555 \
 %_libconfig \
-%_crc:
+%_crc \
+%_mongo-c-driver:
 	$(MAKE_MACRO)
 
 %_examples \
@@ -127,7 +129,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 clean: $(ARCHS:=_clean)
 
 %_clean:
-	make $*_ffmpeg_lhe_clean
+	make $*_ffmpeg_clean
 	make $*_x264_clean
 	make $*_lame_clean
 	make $*_yasm_clean
@@ -138,6 +140,7 @@ clean: $(ARCHS:=_clean)
 	make $*_live555_clean
 	make $*_libconfig_clean
 	make $*_crc_clean
+	make $*_mongo-c-driver_clean
 	make $*_mongoose_clean
 	make $*_valgrind_clean
 	make $*_sdl_clean
@@ -157,14 +160,15 @@ clean: $(ARCHS:=_clean)
 %_codecs_clean \
 %_muxers_clean \
 %_mpeg2ts_clean \
-%_ffmpeg_lhe_clean \
+%_ffmpeg_clean \
 %_x264_clean \
 %_lame_clean \
 %_cjson_clean \
 %_uriparser_clean \
 %_live555_clean \
 %_libconfig_clean \
-%_crc_clean:
+%_crc_clean \
+%_mongo-c-driver_clean:
 	$(CLEAN_MACRO)
 
 %_examples_clean \

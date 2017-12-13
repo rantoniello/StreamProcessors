@@ -43,3 +43,6 @@
 [submodule "3rdplibs/mongo-c-driver"]
 	path = 3rdplibs/mongo-c-driver
 	url = https://github.com/rantoniello/mongo-c-driver.git
+[submodule "3rdplibs/ffmpeg"]
+	path = 3rdplibs/ffmpeg
+	url = https://github.com/rantoniello/ffmpeg.git
