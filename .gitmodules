@@ -46,3 +46,6 @@
 [submodule "3rdplibs/ffmpeg"]
 	path = 3rdplibs/ffmpeg
 	url = https://github.com/rantoniello/ffmpeg.git
+[submodule "3rdplibs/mongoose-5.3"]
+	path = 3rdplibs/mongoose-5.3
+	url = https://github.com/rantoniello/mongoose-5.3.git
