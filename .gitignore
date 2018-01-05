@@ -49,3 +49,14 @@ _install_dir_x86
 .cproject
 .project
 
+# Scons
+3rdplibs/scons/.*
+3rdplibs/scons/*
+!3rdplibs/scons/scons-3.0.0.tar.gz
+
+# MongoDB
+3rdplibs/mongodb/.*
+3rdplibs/mongodb/*
+!3rdplibs/mongodb/mongodb-src-r3.6.0.tar.gz
+
+
