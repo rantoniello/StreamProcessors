@@ -12,6 +12,7 @@ config:
 	@mkdir -p $(PREFIX)/lib
 	@mkdir -p $(PREFIX)/include
 	@mkdir -p $(BUILD_DIR)
+	@(LD_LIBRARY_PATH=$(PREFIX)/lib $(PREFIX)/bin/ffmpeg -codecs > $(BUILD_DIR)/ffmpeg_codecs.txt)> /dev/null 2>/dev/null
 	@if [ ! -f $(BUILD_DIR)/Makefile ] ; then \
 		cd $(BUILD_DIR); \
 		$(SOURCE_DIR)/configure $(CONFIGURE_PARAMS); \

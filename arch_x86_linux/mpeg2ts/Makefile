@@ -5,6 +5,9 @@ PREFIX:= $(INSTALL_DIR)$(CROSS_ARCH)
 
 CONFIGURE_PARAMS= --prefix=$(PREFIX) --srcdir=$(SOURCE_DIR)
 
+CFLAGS+=-D_INSTALL_DIR="\"$(PREFIX)\"" \
+-D_CONFIG_FILE_DIR="\"$(PREFIX)/etc/stream_procs/stream_procs.conf\""
+
 all: install
 
 config:
