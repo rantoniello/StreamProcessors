@@ -67,13 +67,13 @@ TEST(PROGRAM_PROC_POST_DELETE)
 	CHECK_DO(ret_code== STAT_SUCCESS, CHECK(false); goto end);
 
 	ret_code= procs_module_open(NULL);
-	CHECK(ret_code== STAT_SUCCESS);
+	CHECK(ret_code== STAT_SUCCESS || ret_code== STAT_NOTMODIFIED);
 
 	ret_code= procs_module_opt("PROCS_REGISTER_TYPE", &proc_if_mpeg2_prog_proc);
 	CHECK(ret_code== STAT_SUCCESS);
 
 	/* Get PROCS module's instance */
-	procs_ctx= procs_open(NULL);
+	procs_ctx= procs_open(NULL, 16);
 	CHECK_DO(procs_ctx!= NULL, CHECK(false); goto end);
 
 	ret_code= procs_opt(procs_ctx, "PROCS_POST", "prog_proc", "", &rest_str);
