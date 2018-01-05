@@ -11,6 +11,7 @@
 CONFIG_LINUX_MK_PATH_= $(shell pwd)/$(dir $(lastword $(MAKEFILE_LIST)))
 GETABSPATH_SH= $(CONFIG_LINUX_MK_PATH_)/scripts/getabspath.sh
 CONFIG_LINUX_MK_PATH= $(shell $(GETABSPATH_SH) $(CONFIG_LINUX_MK_PATH_))
+ASSETS_DIR=$(CONFIG_LINUX_MK_PATH)/assets
 INSTALL_DIR= $(CONFIG_LINUX_MK_PATH)/_install_dir_
 3RDPLIBS= 3rdplibs
 
@@ -67,7 +68,22 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 # targets that have that substring in ‘$(ARCHS:=_)’)
 # ‘$*’ takes exactly the value of the substring matched by ‘%’ in the 
 # correspondent target itself. 
-%_: 
+%_:
+	mkdir -p $(INSTALL_DIR)$*/bin
+	mkdir -p $(INSTALL_DIR)$*/include
+	mkdir -p $(INSTALL_DIR)$*/lib
+	mkdir -p $(INSTALL_DIR)$*/etc
+	mkdir -p $(INSTALL_DIR)$*/etc/init.d
+	mkdir -p $(INSTALL_DIR)$*/etc/stream_procs
+	mkdir -p $(INSTALL_DIR)$*/etc/mongod
+	mkdir -p $(INSTALL_DIR)$*/var
+	mkdir -p $(INSTALL_DIR)$*/var/log
+	mkdir -p $(INSTALL_DIR)$*/var/run
+	mkdir -p $(INSTALL_DIR)$*/share
+	# Install MongoDB configuration file
+	$(shell $(CONFIG_LINUX_MK_PATH)/scripts/generate_mongod_config.sh $(CONFIG_LINUX_MK_PATH)/assets/mongod.conf.template $(INSTALL_DIR)$*)
+	# Install Stream Processors configuration file
+	cp -a  $(ASSETS_DIR)/stream_procs.conf.template $(INSTALL_DIR)$*/etc/stream_procs/stream_procs.conf
 	make $*_ffmpeg
 	make $*_unittest-cpp
 	make $*_cjson
@@ -80,8 +96,9 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 	make $*_crc
 	make $*_mongo-c-driver
 	make $*_utils
+	make $*_dbdriver
 	make $*_procs
-	make $*_transcoders
+#	make $*_transcoders
 	make $*_codecs
 	make $*_muxers
 	make $*_mpeg2ts
@@ -103,6 +120,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 	$(MAKE_MACRO)
 
 %_utils \
+%_dbdriver \
 %_procs \
 %_transcoders \
 %_codecs \
@@ -145,8 +163,9 @@ clean: $(ARCHS:=_clean)
 	make $*_valgrind_clean
 	make $*_sdl_clean
 	make $*_utils_clean
+	make $*_dbdriver_clean
 	make $*_procs_clean
-	make $*_transcoders_clean
+#	make $*_transcoders_clean
 	make $*_codecs_clean
 	make $*_muxers_clean
 	make $*_mpeg2ts_clean
@@ -155,6 +174,7 @@ clean: $(ARCHS:=_clean)
 	rm -rf _install_dir_*
 
 %_utils_clean \
+%_dbdriver_clean \
 %_procs_clean \
 %_transcoders_clean \
 %_codecs_clean \
