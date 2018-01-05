@@ -1,0 +1,5 @@
+logpath = <install_dir>/var/log/mongod.log
+logappend = true
+#fork = true
+dbpath = <install_dir>/etc/mongod
+pidfilepath = <install_dir>/var/run/mongod.pid

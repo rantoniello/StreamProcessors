@@ -1,0 +1,23 @@
+// Configuration file for 'Stream Processors' library and application.
+
+// HTTP server:
+http_server =
+{
+  local_address = "127.0.0.1";
+  listening_port = "80";
+};
+
+// Database:
+database =
+{
+  mongodb_uri = "mongodb://127.0.0.1:27017";
+  stream_procs = 
+  {
+    // MongoDB application name (e.g. used for logs.)
+    app_name = "stream_procs"
+    // Database name
+    db_name = "db_stream_procs";
+    // Used collection name
+    coll_name = "coll_stream_procs";
+  }
+};

@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# /etc/init.d/<processname>
+# Subsystem file for <processname> server
+#
+# chkconfig: 2345 95 05
+# description: <processname> server daemon
+#
+# processname: <processname>
+# config: <install_dir>/etc/<processname>/<processname>.conf
+# pidfile: <install_dir>/var/run/<processname>.pid
+
+RETVAL=0
+prog="<processname>"
+install_dir="<install_dir>"
+
+start() {
+	echo -n $"Starting $prog:"
+	LD_LIBRARY_PATH=$install_dir/lib $install_dir/bin/<processname>
+	RETVAL=$?
+#	[ "$RETVAL" = 0 ] && touch /var/lock/subsys/$prog
+	echo
+}
+
+stop() {
+	DOWAIT=true;
+	PIDFILE=$install_dir/var/run/$prog.pid;
+	if [ -f $PIDFILE ] ; then
+		PID=$(cat $PIDFILE)
+		TIMECNT=0;
+		TIMEOUT=20; # 20 seconds to wait before killing abruptly
+		echo -n $"Stopping $prog:"
+		kill -TERM $PID
+		# Wait until process ends O.K.
+		while $DOWAIT; do
+			if [ -f $PIDFILE ] && [ $TIMECNT -lt $TIMEOUT ] ; then
+				sleep 1
+				TIMECNT=$((TIMECNT+1))
+			else
+				DOWAIT=false;
+			fi
+		done
+		if [ -f $PIDFILE ] ; then
+			rm -f $PIDFILE
+			kill -9 $PID
+			echo -n $"ERROR; process ended abruptly"
+		fi
+	fi
+	RETVAL=$?
+#	[ "$RETVAL" = 0 ] && rm -f /var/lock/subsys/$prog
+	echo
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		$0 stop || true
+		$0 start
+		;;
+	status)
+		status $prog
+		RETVAL=$?
+		;;
+	*)
+		echo $"Usage: $0 {start|stop|restart|status}"
+		RETVAL=1
+esac
+exit $RETVAL
+
