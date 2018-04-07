@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2017, 2018 Rafael Antoniello
+ * Copyright (c) 2015, 2016, 2017, 2018 Rafael Antoniello
  *
- * This file is part of MediaProcessors.
+ * This file is part of StreamProcessors.
  *
- * MediaProcessors is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+ * StreamProcessors is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * MediaProcessors is distributed in the hope that it will be useful,
+ * StreamProcessors is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with MediaProcessors. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with StreamProcessors.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -90,6 +90,7 @@ SUITE(UTESTS_MPEG2_SP)
 
 		ret_code= log_module_open();
 		CHECK_DO(ret_code== STAT_SUCCESS, CHECK(false); goto end);
+
 		ret_code= comm_module_open(NULL);
 		CHECK_DO(ret_code== STAT_SUCCESS, CHECK(false); goto end);
 
@@ -100,7 +101,7 @@ SUITE(UTESTS_MPEG2_SP)
 		CHECK_DO(ret_code== STAT_SUCCESS, CHECK(false); goto end);
 
 		/* Get PROCS module's instance */
-		procs_ctx= procs_open(NULL, 16);
+		procs_ctx= procs_open(NULL, 16, "stream_procs", NULL);
 		CHECK_DO(procs_ctx!= NULL, CHECK(false); goto end);
 
 		/* Get MPEG2 SP instance */
