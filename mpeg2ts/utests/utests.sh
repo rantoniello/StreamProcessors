@@ -10,8 +10,9 @@ GENERIC_ERROR_CODE=255
 TESTDIR=tests
 USE_VALGRIND=$3
 
-VALGRIND_OPTIONS="--error-exitcode=$VALGRIND_ERROR_CODE --leak-check=full --trace-children=yes"
-#--show-reachable=yes --track-origins=yes"
+VALGRIND_CHILDREN_SKIPPED="*mongod*"
+VALGRIND_OPTIONS="--error-exitcode=$VALGRIND_ERROR_CODE --leak-check=full --trace-children=yes --trace-children-skip=$VALGRIND_CHILDREN_SKIPPED \
+--show-reachable=yes --track-origins=yes"
 #--log-file="my log file full path and name"
 #-v --track-origins=yes
 
@@ -23,6 +24,12 @@ echo "################################"
 echo ""
 
 if [ "$USE_VALGRIND" == 'yes' ] ; then
+	echo ""
+	echo "################################"
+	echo "#### NOTE: valgrind is skipping the children with the following \
+patterns: $VALGRIND_CHILDREN_SKIPPED"
+	echo "################################"
+	echo ""
 	sudo LD_LIBRARY_PATH=$1/lib stdbuf -o0 -e0 $1/bin/valgrind \
 	$VALGRIND_OPTIONS $1/bin/$2
 else

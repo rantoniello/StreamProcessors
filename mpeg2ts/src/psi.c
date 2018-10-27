@@ -106,14 +106,14 @@ int psi_section_ctx_cmp(const psi_section_ctx_t* psi_section_ctx1,
 	/* Compare representative fields of sections */
 	if(psi_section_ctx1->table_id!= psi_section_ctx2->table_id)
 		goto end;
-	else if(psi_section_ctx1->section_length!= psi_section_ctx2->section_length)
+	if(psi_section_ctx1->section_length!= psi_section_ctx2->section_length)
 		goto end;
-	else if(psi_section_ctx1->table_id_extension!=
+	if(psi_section_ctx1->table_id_extension!=
 			psi_section_ctx2->table_id_extension)
 		goto end;
-	else if(psi_section_ctx1->version_number!= psi_section_ctx2->version_number)
+	if(psi_section_ctx1->version_number!= psi_section_ctx2->version_number)
 		goto end;
-	else if(psi_section_ctx1->crc_32!= psi_section_ctx2->crc_32)
+	if(psi_section_ctx1->crc_32!= psi_section_ctx2->crc_32)
 		goto end;
 
 	// TODO: compare PSI specific data
@@ -427,7 +427,7 @@ void psi_pms_ctx_trace(const psi_pms_ctx_t *psi_pms_ctx)
 				llist_get_nth(psi_pms_ctx->psi_pms_es_ctx_llist, i);
 		if(psi_pms_es_ctx== NULL)
 			break; // End of list reached
-		LOGV(">> '%d°' Elementary Stream data: \n", i);
+		LOGV(">> '#%d' Elementary Stream data: \n", i+ 1);
 		psi_pms_es_ctx_trace((const psi_pms_es_ctx_t*)psi_pms_es_ctx);
 	}
 }

@@ -4,7 +4,7 @@
 http_server =
 {
   local_address = "127.0.0.1";
-  listening_port = "80";
+  listening_port = "8080";
 };
 
 // Database:

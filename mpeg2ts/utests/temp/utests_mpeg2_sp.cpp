@@ -36,25 +36,18 @@ extern "C" {
 
 #include <libcjson/cJSON.h>
 
+#define ENABLE_DEBUG_LOGS //uncomment to trace logs
 #include <libmediaprocsutils/log.h>
 #include <libmediaprocsutils/check_utils.h>
 #include <libmediaprocsutils/stat_codes.h>
 #include <libmediaprocsutils/comm.h>
 #include <libmediaprocsutils/tsudpsend.h>
+#include <libdbdriver/dbdriver.h>
 #include <libmediaprocs/proc_if.h>
 #include <libmediaprocs/procs.h>
 #include <libmediaprocs/proc.h>
 #include <libstreamprocsmpeg2ts/mpeg2_sp.h>
 }
-
-#define ENABLE_DEBUG_LOGS //uncomment to trace logs
-#ifdef ENABLE_DEBUG_LOGS
-	#define LOGD_CTX_INIT(CTX) LOG_CTX_INIT(CTX)
-	#define LOGD(FORMAT, ...) LOG(FORMAT, ##__VA_ARGS__)
-#else
-	#define LOGD_CTX_INIT(CTX)
-	#define LOGD(...)
-#endif
 
 SUITE(UTESTS_MPEG2_SP)
 {
@@ -80,9 +73,16 @@ SUITE(UTESTS_MPEG2_SP)
 		char *rest_str= NULL;
 		cJSON *cjson_rest= NULL, *cjson_aux= NULL;
 		volatile int flag_exit= 0;
+		mongod_wrapper_ctx_t *mongod_wrapper_ctx= NULL;
 		LOG_CTX_INIT(NULL);
 
 		LOGV("\n\nExecuting UTESTS_MPEG2_SP::SIMPLE_TEST...\n");
+
+		/* Launch mongod service */
+		mongod_wrapper_ctx= mongod_wrapper_open(NULL, NULL,
+				"mongodb://127.0.0.1:27017", "sp-use-example",
+				"db_stream_procs", "coll_stream_procs", LOG_CTX_GET());
+		CHECK_DO(mongod_wrapper_ctx!= NULL, CHECK(false); goto end);
 
 		/* Set working directory */
 		ret_code= chdir(_BASE_PATH"/mpeg2ts/utests/assets/");
@@ -203,6 +203,7 @@ end:
 			free(rest_str);
 		if(cjson_rest!= NULL)
 			cJSON_Delete(cjson_rest);
+		mongod_wrapper_close(&mongod_wrapper_ctx, LOG_CTX_GET());
 		comm_module_close();
 		log_module_close();
 

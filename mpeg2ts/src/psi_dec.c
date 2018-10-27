@@ -223,7 +223,6 @@ int psi_dec_section(uint8_t *buf, size_t buf_size, uint16_t pid,
 
 	/* Parse CRC-32 */
 	psi_section_ctx->crc_32= GET_BITS(32);
-
 	//psi_section_ctx_trace((const psi_section_ctx_t*)
 	//		psi_section_ctx); //comment-me
 
@@ -250,6 +249,8 @@ int psi_dec_read_next_section(fifo_ctx_t* ififo_ctx, log_ctx_t *log_ctx,
 	int flag_section_length_parsed= 0, flag_section_completed= 0;
 	uint16_t section_length= 0; // Set to "not specified"; update below.
 	uint16_t psi_pid= 0xFFFF; // Initialize to invalid.
+	const size_t psi_table_max_section_len_aligned= EXTEND_SIZE_TO_MULTIPLE(
+			PSI_TABLE_MAX_SECTION_LEN, CTX_S_BASE_ALIGN);
 	LOG_CTX_INIT(log_ctx);
 
 	/* Check arguments */
@@ -322,8 +323,9 @@ int psi_dec_read_next_section(fifo_ctx_t* ififo_ctx, log_ctx_t *log_ctx,
 	CHECK_DO(section_size<= PSI_TABLE_MAX_SECTION_LEN, goto end);
 	CHECK_DO(SIZE_IS_MULTIPLE(PSI_TABLE_MAX_SECTION_LEN, sizeof(WORD_T)),
 			goto end);
-	section_data= (uint8_t*)malloc(PSI_TABLE_MAX_SECTION_LEN);
+	section_data= (uint8_t*)malloc(psi_table_max_section_len_aligned);
 	CHECK_DO(section_data!= NULL, goto end);
+	memset(section_data, 0xFF, psi_table_max_section_len_aligned);
 	memcpy(section_data, &payload[1+ pointer_field], section_size);
 
 	/* Check if we have parsed enough bytes to get 'section_length' */

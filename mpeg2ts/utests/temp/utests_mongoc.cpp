@@ -36,19 +36,12 @@ extern "C" {
 
 #include <libcjson/cJSON.h>
 
+#define ENABLE_DEBUG_LOGS //uncomment to trace logs
 #include <libmediaprocsutils/log.h>
 #include <libmediaprocsutils/check_utils.h>
 #include <libmediaprocsutils/stat_codes.h>
+#include <libdbdriver/dbdriver.h>
 }
-
-//#define ENABLE_DEBUG_LOGS //uncomment to trace logs
-#ifdef ENABLE_DEBUG_LOGS
-	#define LOGD_CTX_INIT(CTX) LOG_CTX_INIT(CTX)
-	#define LOGD(FORMAT, ...) LOG(FORMAT, ##__VA_ARGS__)
-#else
-	#define LOGD_CTX_INIT(CTX)
-	#define LOGD(...)
-#endif
 
 SUITE(UTESTS_MONGOC)
 {
@@ -137,8 +130,22 @@ end:
 		mongoc_coll_print_doc(collection, &bson_empty, NULL, log_ctx);
 		bson_destroy(&bson_empty);
 	}
+#if 0
+	TEST(SIMPLE_TEST_MONGOD)
+	{
+		mongod_wrapper_ctx_t *mongod_wrapper_ctx= NULL;
+		const char *mongod_uri= "mongodb://127.0.0.1:27017";
+		LOG_CTX_INIT(NULL);
 
-	TEST(SIMPLE_TEST)
+		mongod_wrapper_ctx= mongod_wrapper_open(NULL, NULL, mongod_uri,
+				LOG_CTX_GET());
+		CHECK(mongod_wrapper_ctx!= NULL);
+
+		mongod_wrapper_close(&mongod_wrapper_ctx, LOG_CTX_GET());
+	}
+#endif
+#if 1
+	TEST(SIMPLE_TEST_CLIENT)
 	{
 		int ret_code;
 		sigset_t set;
@@ -151,15 +158,24 @@ end:
 		bson_t *bson_command= NULL, *bson_doc= NULL, *bson_query= NULL,
 				*bson_opts= NULL;
 		char *str= NULL;
+		const char *mongod_uri= "mongodb://127.0.0.1:27017";
+		mongod_wrapper_ctx_t *mongod_wrapper_ctx= NULL;
 		LOG_CTX_INIT(NULL);
 
-		LOGV("\n\nExecuting UTESTS_MONGOC::SIMPLE_TEST...\n");
+		LOGV("\n\nExecuting UTESTS_MONGOC::SIMPLE_TEST_CLIENT...\n");
 
-		/* Initialize libmongoc's internals */
-		mongoc_init();
+		/* Launch mongod service.
+		 * IMPORTANT NOTE: Remember 'mongoc_init()' is performed inside the
+		 * wrapper 'mongod_wrapper_open()' (thus we do not need to call it).
+		 * The function 'mongod_wrapper_close()' will finally call
+		 * 'mongoc_cleanup()'.
+		 */
+		mongod_wrapper_ctx= mongod_wrapper_open(NULL, NULL, mongod_uri,
+				LOG_CTX_GET());
+		CHECK_DO(mongod_wrapper_ctx!= NULL, CHECK(false); goto end);
 
 		/* Create a new client instance */
-		client= mongoc_client_new("mongodb://127.0.0.1:27017");
+		client= mongoc_client_new(mongod_uri);
 		CHECK_DO(client!= NULL, CHECK(false); goto end);
 
 		/* Register the application name so we can track it in the profile logs
@@ -265,8 +281,10 @@ end:
 			bson_destroy(bson_opts);
 		bson_destroy(&bson_reply);
 		bson_destroy(&bson_empty);
-		mongoc_cleanup();
+
+		mongod_wrapper_close(&mongod_wrapper_ctx, LOG_CTX_GET());
 
 		LOGV("... passed O.K.\n");
 	}
+#endif
 }

@@ -4,9 +4,10 @@ PREFIX:= $(INSTALL_DIR)$(CROSS_ARCH)
 
 CONFIGURE_PARAMS= --prefix=$(PREFIX) --srcdir=$(SOURCE_DIR)
 
+CFLAGS+=-D_INSTALL_DIR="\"$(PREFIX)\""
 CFLAGS+=-D_CONFIG_FILE_DIR="\"$(PREFIX)/etc/stream_procs/stream_procs.conf\""
 
-all: build
+all: install
 
 config:
 	@mkdir -p $(PREFIX)
@@ -19,6 +20,9 @@ config:
 
 build: config
 	cd $(BUILD_DIR); make
+
+install: build
+	cd $(BUILD_DIR); make install
 
 clean:
 	@if [ -d $(BUILD_DIR) ] ; then \

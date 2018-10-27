@@ -37,6 +37,7 @@
 #include <errno.h>
 
 #include <libcjson/cJSON.h>
+#define ENABLE_DEBUG_LOGS //uncomment to trace logs
 #include <libmediaprocsutils/log.h>
 #include <libmediaprocsutils/stat_codes.h>
 #include <libmediaprocsutils/check_utils.h>
@@ -110,6 +111,9 @@ static int prog_proc_rest_get(proc_ctx_t *proc_ctx,
 static int prog_proc_open_tsk(prog_proc_ctx_t *prog_proc_ctx,
 		const char *settings_str, const char* href_arg);
 
+static int send_frame(proc_ctx_t *proc_ctx,
+        const proc_frame_ctx_t *proc_frame_ctx);
+
 /* **** Implementations **** */
 
 const proc_if_t proc_if_mpeg2_prog_proc= //FIXME!!
@@ -118,7 +122,11 @@ const proc_if_t proc_if_mpeg2_prog_proc= //FIXME!!
 	(uint64_t)0, //(PROC_FEATURE_BITRATE|PROC_FEATURE_REGISTER_PTS),
 	prog_proc_open,
 	prog_proc_close,
-	NULL, //prog_proc_send // TODO // similar to 'proc_send_frame_default1' but do not use frame!! just pass the frame binary-buffer
+	/* Our 'send_frame' implementation is similar to 'proc_send_frame_default1'
+	 * but does not use the frame context, instead it just pass the input
+	 * packet binary-buffer.
+	 */
+	send_frame,
 	NULL, // send-no-dup
 	NULL, //prog_proc_recv // TODO
 	prog_proc_unblock,
@@ -170,7 +178,7 @@ static proc_ctx_t* prog_proc_open(const proc_if_t *proc_if,
 		while((p= strchr(p, '/'))!= NULL && (p< href+ PROCS_HREF_MAX_LEN)) {
 			*p= '-';
 		}
-		LOGD("href_arg-modified: '%s'\n", href); //comment-me
+		LOGD("href_arg-modified: '%s'\n", href);
 	}
 
 	/* We have to reallocate i/o FIFOs on shared memory */
@@ -240,8 +248,6 @@ end:
  */
 static void prog_proc_close(proc_ctx_t **ref_proc_ctx)
 {
-	int status;
-	pid_t w;
 	prog_proc_ctx_t *prog_proc_ctx= NULL;
 	proc_ctx_t *proc_ctx= NULL; // Do not release (alias)
 	LOG_CTX_INIT(NULL);
@@ -253,34 +259,16 @@ static void prog_proc_close(proc_ctx_t **ref_proc_ctx)
 	proc_ctx= (proc_ctx_t*)prog_proc_ctx;
 	LOG_CTX_SET(proc_ctx->log_ctx);
 
-	/* Join processing task first:
-	 * - set (memory-shared)flag to notify we are exiting processing;
-	 * - unlock (memory-shared) input/output frame FIFO's;
-	 * - unlock (memory-shared) input/output API FIFO's;
-	 * - wait for task to terminate.
+	/* IMPORTANT:
+	 * This is executed within 'proc_close()', the execution order is:
+	 * -1.- unblock PROC common interface;
+	 * -2.- unblock PROC specific interface (this processor);
+	 * -3.- close/release PROC common resources;
+	 * -4.- close/release PROC specific (this processor) resources.
+	 * Thus, at this point we are in stage (4), that means
+	 * 'prog_proc_unblock()' was already called.
 	 */
-	*prog_proc_ctx->ref_flag_exit_shared= 1;
-	// NOTE that proc_ctx->fifo_ctx_array[i/o] were already unlocked and
-	// closed by PROC module (refer to the calling function 'proc_close()').
-	//fifo_set_blocking_mode(proc_ctx->fifo_ctx_array[PROC_IPUT], 0);
-	//fifo_set_blocking_mode(proc_ctx->fifo_ctx_array[PROC_OPUT], 0);
-	fifo_set_blocking_mode(prog_proc_ctx->fifo_ctx_api_array[PROC_IPUT], 0);
-	fifo_set_blocking_mode(prog_proc_ctx->fifo_ctx_api_array[PROC_OPUT], 0);
-	LOGD("Waiting processor task to terminate... "); // comment-me
-    w= waitpid(prog_proc_ctx->child_pid, &status, WUNTRACED);
-    ASSERT(w>= 0);
-    if(w>= 0) {
-        if(WIFEXITED(status)) {
-        	LOGD("task exited, status=%d\n", WEXITSTATUS(status));
-        } else if(WIFSIGNALED(status)) {
-        	LOGD("task killed by signal %d\n", WTERMSIG(status));
-        } else if(WIFSTOPPED(status)) {
-        	LOGD("task stopped by signal %d\n", WSTOPSIG(status));
-        } else if(WIFCONTINUED(status)) {
-        	LOGD("task continued\n");
-        }
-    }
-    LOGD("... waited returned O.K.\n"); // comment-me
+	//ASSERT(prog_proc_unblock(proc_ctx)== STAT_SUCCESS); // already called
 
 	/* Release input/output API buffers */
 	fifo_close(&prog_proc_ctx->fifo_ctx_api_array[PROC_IPUT]);
@@ -306,6 +294,8 @@ static void prog_proc_close(proc_ctx_t **ref_proc_ctx)
  */
 static int prog_proc_unblock(proc_ctx_t *proc_ctx)
 {
+	int status;
+	pid_t w;
 	prog_proc_ctx_t *prog_proc_ctx= (prog_proc_ctx_t*)proc_ctx;
 	LOG_CTX_INIT(NULL);
 
@@ -314,14 +304,55 @@ static int prog_proc_unblock(proc_ctx_t *proc_ctx)
 
 	LOG_CTX_SET(proc_ctx->log_ctx);
 
-	/* Unlock shared input/output FIFO's */
+	LOGD(">>%s\n", __FUNCTION__);
+
+	if(*prog_proc_ctx->ref_flag_exit_shared!= 0) {
+		LOGD("<<%s (was already unlocked)\n", __FUNCTION__);
+		return STAT_SUCCESS;
+	}
+
+	/* IMPORTANT:
+	 * This is executed within 'proc_close()', the execution order is:
+	 * -1.- unblock PROC common interface;
+	 * -2.- unblock PROC specific interface (this processor);
+	 * -3.- ** close/release ** PROC common resources;
+	 * -4.- ** close/release ** PROC specific (this processor) resources.
+	 * Thus, we have to finish task processing loops before (3) happens to
+	 * avoid using already released common resources in (2).
+	 * So we finish and wait for task loop here in unblock callback.
+	 */
+
+	/* Join processing task first:
+	 * - set (memory-shared)flag to notify we are exiting processing;
+	 * - unlock (memory-shared) input/output frame FIFO's;
+	 * - unlock (memory-shared) input/output API FIFO's;
+	 * - wait for task to terminate.
+	 */
+	*prog_proc_ctx->ref_flag_exit_shared= 1;
+	// NOTE that proc_ctx->fifo_ctx_array[i/o] may be already unlocked by PROC
+	// module (in the case the calling function is 'proc_close()').
+	// Nevertheless, we unblock here (may be redundant) to be self-contained.
 	fifo_set_blocking_mode(proc_ctx->fifo_ctx_array[PROC_IPUT], 0);
 	fifo_set_blocking_mode(proc_ctx->fifo_ctx_array[PROC_OPUT], 0);
-
-	/* Unlock shared input/output API FIFO's */
 	fifo_set_blocking_mode(prog_proc_ctx->fifo_ctx_api_array[PROC_IPUT], 0);
 	fifo_set_blocking_mode(prog_proc_ctx->fifo_ctx_api_array[PROC_OPUT], 0);
+	LOGD("Waiting processor task to terminate... "); // comment-me
+	w= waitpid(prog_proc_ctx->child_pid, &status, WUNTRACED);
+	ASSERT(w>= 0);
+	if(w>= 0) {
+		if(WIFEXITED(status)) {
+			LOGD("task exited, status=%d\n", WEXITSTATUS(status));
+		} else if(WIFSIGNALED(status)) {
+			LOGD("task killed by signal %d\n", WTERMSIG(status));
+		} else if(WIFSTOPPED(status)) {
+			LOGD("task stopped by signal %d\n", WSTOPSIG(status));
+		} else if(WIFCONTINUED(status)) {
+			LOGD("task continued\n");
+		}
+	}
+	LOGD("... waited returned O.K.\n");
 
+	LOGD("<<%s\n", __FUNCTION__);
 	return STAT_SUCCESS;
 }
 
@@ -345,7 +376,7 @@ static int prog_proc_open_tsk(prog_proc_ctx_t *prog_proc_ctx,
 	} else if(child_pid== 0) {
 		/* **** CHILD CODE ('child_pid'== 0) **** */
 		char *const args[] = {
-				_INSTALL_DIR"/bin/streamprocsmpeg2ts_apps_prog_proc",
+				_INSTALL_DIR"/bin/streamprocsmpeg2ts_app_prog_proc",
 				(char *const)href_arg,
 				(char *const)settings_str,
 				NULL
@@ -355,7 +386,7 @@ static int prog_proc_open_tsk(prog_proc_ctx_t *prog_proc_ctx,
 				NULL
 		};
 		if((ret_code= execve(
-				_INSTALL_DIR"/bin/streamprocsmpeg2ts_apps_prog_proc", args,
+				_INSTALL_DIR"/bin/streamprocsmpeg2ts_app_prog_proc", args,
 				envs))< 0) { // execve won't return if succeeded
 			ASSERT(0);
 			exit(ret_code);
@@ -365,4 +396,62 @@ static int prog_proc_open_tsk(prog_proc_ctx_t *prog_proc_ctx,
 	/* PARENT CODE (child_pid> 0) */
 	prog_proc_ctx->child_pid= child_pid;
 	return STAT_SUCCESS;
+}
+
+static int send_frame(proc_ctx_t *proc_ctx,
+		const proc_frame_ctx_t *proc_frame_ctx)
+{
+	//register uint64_t flag_proc_features; //FIXME!!
+	const proc_if_t *proc_if;
+	LOG_CTX_INIT(NULL);
+
+	/* Check arguments */
+	CHECK_DO(proc_ctx!= NULL, return STAT_ERROR);
+	//CHECK_DO(proc_frame_ctx!= NULL, return STAT_ERROR); // bypassed
+
+	LOG_CTX_SET(proc_ctx->log_ctx);
+
+	/* Get required variables from PROC interface structure */
+	proc_if= proc_ctx->proc_if;
+	CHECK_DO(proc_if!= NULL, return STAT_ERROR);
+	//    flag_proc_features= proc_if->flag_proc_features; //FIXME!!
+
+	/* Check if input PTS statistics are used by this processor */
+#if 0 //FIXME
+	if((flag_proc_features& PROC_FEATURE_REGISTER_PTS) &&
+			(flag_proc_features&PROC_FEATURE_LATENCY))
+		proc_stats_register_frame_pts(proc_ctx, proc_frame_ctx, PROC_IPUT);
+
+	/* Treat bitrate statistics if applicable.
+	 * For most processors implementation (specially for encoders and
+	 * decoders), measuring traffic at this point would be precise.
+	 * Nevertheless, for certain processors, as is the case of demultiplexers,
+	 * this function ('proc_send_frame()') is not used thus input bitrate
+	 * should be measured at some other point of the specific implementation
+	 * (e.g. when receiving data from an INET socket).
+	 */
+	if(flag_proc_features& PROC_FEATURE_BITRATE)
+		proc_stats_register_accumulated_io_bits(proc_ctx, proc_frame_ctx,
+				PROC_IPUT);
+#endif
+	/* Write frame to input FIFO.
+	 * Note that program's input frame is an MPEG-2 TS packet initialized
+	 * ~ as follows:
+	 * proc_frame_ctx_t proc_frame_ctx= {0};
+	 * proc_frame_ctx.data= pkt_p;
+	 * proc_frame_ctx.p_data[0]= pkt_p;
+	 * proc_frame_ctx.linesize[0]= TS_PKT_SIZE;
+	 * proc_frame_ctx.width[0]= TS_PKT_SIZE;
+	 * proc_frame_ctx.height[0]= 1;
+	 * proc_frame_ctx.proc_sample_fmt= PROC_IF_FMT_UNDEF;
+	 * proc_frame_ctx.pts= -1;
+	 * proc_frame_ctx.dts= -1;
+	 * proc_frame_ctx.es_id= pid; // pass PID as stream ID!.
+	 * Note that we only need the information at 'proc_frame_ctx.data', which
+	 * is the binary buffer to duplicate. All the rest of information is
+	 * implicitly included in the transport packet and should be parsed
+	 * internally by the program-processor.
+	 */
+	return fifo_put_dup(proc_ctx->fifo_ctx_array[PROC_IPUT],
+			proc_frame_ctx->data, proc_frame_ctx->linesize[0]);
 }

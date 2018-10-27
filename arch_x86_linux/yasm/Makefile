@@ -28,6 +28,7 @@ install: build
 	cd $(BUILD_DIR); make install
 
 clean:
+	@rm -f $(SOURCE_DIR)/configure
 	@rm -f  $(PREFIX)/bin/*$(LIBNAME) $(PREFIX)/bin/ytasm
 	@rm -f  $(PREFIX)/lib/lib$(LIBNAME)*
 	@rm -rf $(PREFIX)/include/lib$(LIBNAME)*

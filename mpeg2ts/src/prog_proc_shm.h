@@ -28,15 +28,6 @@
 
 /* **** Definitions **** */
 
-#define ENABLE_DEBUG_LOGS
-#ifdef ENABLE_DEBUG_LOGS
-	#define LOGD_CTX_INIT(CTX) LOG_CTX_INIT(CTX)
-	#define LOGD(FORMAT, ...) LOGV(FORMAT, ##__VA_ARGS__)
-#else
-	#define LOGD_CTX_INIT(CTX)
-	#define LOGD(...)
-#endif
-
 /** Installation directory complete path */
 #ifndef _INSTALL_DIR //HACK: "fake" path for IDE
 #define _INSTALL_DIR "./"

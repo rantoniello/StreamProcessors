@@ -11,9 +11,12 @@
 CONFIG_LINUX_MK_PATH_= $(shell pwd)/$(dir $(lastword $(MAKEFILE_LIST)))
 GETABSPATH_SH= $(CONFIG_LINUX_MK_PATH_)/scripts/getabspath.sh
 CONFIG_LINUX_MK_PATH= $(shell $(GETABSPATH_SH) $(CONFIG_LINUX_MK_PATH_))
+
 ASSETS_DIR=$(CONFIG_LINUX_MK_PATH)/assets
+SCRIPTS_DIR=$(CONFIG_LINUX_MK_PATH)/scripts
 INSTALL_DIR= $(CONFIG_LINUX_MK_PATH)/_install_dir_
 3RDPLIBS= 3rdplibs
+PROGRAM_NAME = stream_procs
 
 ##### Define scripting #####
 SHELL:=/bin/bash
@@ -74,28 +77,33 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 	mkdir -p $(INSTALL_DIR)$*/lib
 	mkdir -p $(INSTALL_DIR)$*/etc
 	mkdir -p $(INSTALL_DIR)$*/etc/init.d
-	mkdir -p $(INSTALL_DIR)$*/etc/stream_procs
+	mkdir -p $(INSTALL_DIR)$*/etc/$(PROGRAM_NAME)
 	mkdir -p $(INSTALL_DIR)$*/etc/mongod
 	mkdir -p $(INSTALL_DIR)$*/var
 	mkdir -p $(INSTALL_DIR)$*/var/log
 	mkdir -p $(INSTALL_DIR)$*/var/run
 	mkdir -p $(INSTALL_DIR)$*/share
+	mkdir -p $(INSTALL_DIR)$*/tmp
 	# Install MongoDB configuration file
 	$(shell $(CONFIG_LINUX_MK_PATH)/scripts/generate_mongod_config.sh $(CONFIG_LINUX_MK_PATH)/assets/mongod.conf.template $(INSTALL_DIR)$*)
 	# Install Stream Processors configuration file
-	cp -a  $(ASSETS_DIR)/stream_procs.conf.template $(INSTALL_DIR)$*/etc/stream_procs/stream_procs.conf
+	cp -a  $(ASSETS_DIR)/$(PROGRAM_NAME).conf.template $(INSTALL_DIR)$*/etc/$(PROGRAM_NAME)/$(PROGRAM_NAME).conf
 	make $*_ffmpeg
 	make $*_unittest-cpp
 	make $*_cjson
 	make $*_uriparser
 	make $*_mongoose
+	make $*_mongoose-5.3
 	make $*_sdl
+	make $*_openssl
 	make $*_valgrind
 	make $*_live555
 	make $*_libconfig
 	make $*_crc
+	make $*_mbedtls_base64
 	make $*_mongo-c-driver
 	make $*_utils
+	make $*_stats
 	make $*_dbdriver
 	make $*_procs
 #	make $*_transcoders
@@ -103,6 +111,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 	make $*_muxers
 	make $*_mpeg2ts
 	make $*_examples
+	make $*_main
 
 # To compile library "utils" standalone: "make x86_utils".
 # To clean library "utils" standalone: "make x86_utils_clean".
@@ -120,6 +129,7 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 	$(MAKE_MACRO)
 
 %_utils \
+%_stats \
 %_dbdriver \
 %_procs \
 %_transcoders \
@@ -132,15 +142,19 @@ CLEAN_MACRO= $(CLEAN_MACRO__:libname__=$(patsubst $*_%_clean,%,$@))
 %_live555 \
 %_libconfig \
 %_crc \
+%_mbedtls_base64 \
 %_mongo-c-driver:
 	$(MAKE_MACRO)
 
 %_examples \
+%_main \
 %_yasm \
 %_nasm \
 %_unittest-cpp \
 %_mongoose \
+%_mongoose-5.3 \
 %_sdl \
+%_openssl \
 %_valgrind:
 	@if [[ $* == *86* ]]; then $(MAKE_MACRO); fi
 
@@ -158,11 +172,15 @@ clean: $(ARCHS:=_clean)
 	make $*_live555_clean
 	make $*_libconfig_clean
 	make $*_crc_clean
+	make $*_mbedtls_base64_clean
 	make $*_mongo-c-driver_clean
 	make $*_mongoose_clean
+	make $*_mongoose-5.3_clean
 	make $*_valgrind_clean
 	make $*_sdl_clean
+	make $*_openssl_clean
 	make $*_utils_clean
+	make $*_stats_clean
 	make $*_dbdriver_clean
 	make $*_procs_clean
 #	make $*_transcoders_clean
@@ -170,10 +188,12 @@ clean: $(ARCHS:=_clean)
 	make $*_muxers_clean
 	make $*_mpeg2ts_clean
 	make $*_examples_clean
+	make $*_main_clean
 	rm -rf *~ *.log *.log*
 	rm -rf _install_dir_*
 
 %_utils_clean \
+%_stats_clean \
 %_dbdriver_clean \
 %_procs_clean \
 %_transcoders_clean \
@@ -188,14 +208,18 @@ clean: $(ARCHS:=_clean)
 %_live555_clean \
 %_libconfig_clean \
 %_crc_clean \
+%_mbedtls_base64_clean \
 %_mongo-c-driver_clean:
 	$(CLEAN_MACRO)
 
 %_examples_clean \
+%_main_clean \
 %_yasm_clean \
 %_nasm_clean \
 %_unittest-cpp_clean \
 %_mongoose_clean \
+%_mongoose-5.3_clean \
 %_sdl_clean \
+%_openssl_clean \
 %_valgrind_clean:
 	@if [[ $* == *86* ]]; then $(CLEAN_MACRO); fi;

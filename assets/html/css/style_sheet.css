@@ -1,0 +1,1035 @@
+body {
+	font-size: 80%;
+	font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+	background-color: #0e0e0e; //#A4A4A4;
+}
+
+ul.main-tabs {
+	list-style-type: none;
+	margin: 20px 0 0 0;
+	padding: 0 0 5px 0;
+	z-index: 0;
+}
+ul.main-tabs li {
+	display: inline;
+}
+ul.main-tabs li a {
+	color: #fff; //#42454a;
+	background-color: rgba(64, 64, 64, 1); //#dedbde;
+	border: 1px solid rgba(64, 64, 64, 1); //#c9c3ba;
+	border-bottom: none;
+	padding: 5px 5px 5px 5px;
+	text-decoration: none;
+}
+ul.main-tabs li a:hover {
+	background-color: rgba(128, 128, 128, 1); //#f1f0ee;
+}
+ul.main-tabs li a.selected {
+	color: #fff; //#000;
+	background-color: rgba(128, 128, 128, 1); //#f1f0ee;
+	font-weight: bold;
+	padding: 11px 5px 5px 5px;
+}
+div.main-tabs-content {
+	border: 1px solid rgba(128, 128, 128, 1); //#c9c3ba;
+	padding: 0 0 0 0.5em;
+	background-color: rgba(128, 128, 128, 1); //#f1f0ee;
+}
+div.main-tabs-content.hide {
+	display: none;
+}
+div.tabPlane {
+	border: 1px solid rgba(128, 128, 128, 1); //#c9c3ba;
+	background-color: rgba(128, 128, 128, 1); //#f1f0ee;
+}
+
+ul.streamProc {
+	list-style-type: none;
+	margin: 0/*30px*/ 0 0 calc(-0.5em - 1px)/*0*/;
+	padding: 0 0 0.3em 0;
+	background-color: #dedbde;
+	float:left;
+	width:200px;
+}
+ul.streamProc li {
+	display: flex;
+}
+ul.streamProc li a {
+	color: #fff; //#42454a;
+	background-color: rgba(64, 64, 64, 1); //#dedbde;
+	border: 1px solid rgba(64, 64, 64, 1); //#c9c3ba;
+	border-right: none;
+	padding: 0.3em;
+	text-decoration: none;
+	width:200px;
+}
+ul.streamProc li a:hover {
+	background-color: #f1f0ee;
+}
+ul.streamProc li a.selected {
+	color: #000;
+	background-color: #f1f0ee;
+	font-weight: bold;
+	padding: 0.7em 0.3em 0.38em 0.3em
+}
+div.streamProc-content {
+	border: 1px solid #c9c3ba;
+	padding: 1em;
+	background-color: #f1f0ee;
+	width:calc(100% - 200px - 3.5em + 1px);
+	position: absolute;
+	margin: 0 calc(200px - 0.5em - 1px); 0 -0.5em;
+}
+div.streamProc-content.hide {
+	display: none;
+}
+
+
+.processing {
+	background: url(images/processing.png) 100% center no-repeat;
+	color: green !important;
+	background-color: #ACEC7E;
+}
+
+.disassociated {
+	background: url(images/disassociated.png) 100% center no-repeat;
+	color: red !important;
+	background-color: #E3E3E3;
+}
+
+.disassociated_es {
+	background: url(images/disassociated_es.png) 100% center no-repeat;
+	color: red !important;
+	background-color: #E3E3E3;
+}
+
+.normal {
+	font-size:13px;
+}
+.right {
+  float: right;
+}
+
+h3 {
+	font-size:16px;
+}
+h4 {
+	font-size:14px;
+}
+h5 {
+	font-size:13px;
+	margin: 0 0 0 0;
+}
+p  {
+	font-size:13px;
+	margin: 0 0 0 0;
+}
+p.unselect {
+	color: grey;
+	font-weight: normal;
+}
+
+td {
+	font-size:13px;
+}
+
+td.normal {
+	color:black;
+	font-weight:normal;
+}
+
+td.unselect {
+	color:grey;
+	font-weight:normal;
+}
+
+table.round {
+    border: 1px solid #c9c3ba;
+    border-bottom: none;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    padding: 5px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+select{
+    margin: 0;
+    padding: 0;
+    vertical-align:middle;
+}
+
+/******************************************************************************/
+/* SETTINGS
+/******************************************************************************/
+.settings {
+    font-size: 13px;
+}
+
+/* ************************** Settings table ******************************** */
+
+table.settings {
+    border: none; /*1px solid #c9c3ba;*/
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    margin: 0 0 0 0;
+    padding: 0px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+table.settings.embedded {
+	margin: 0 0 0 0;
+    border: none;
+    padding: 5px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+caption.settings {
+    text-align: left;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 0px 0px 13px 0px;
+}
+th.settings {
+    border-bottom: none; /*1px solid #c9c3ba;*/
+    /*border-collapse: collapse;*/
+    font-size:13px;
+    font-weight:bold;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+    max-width: 250px;
+    width: 220px;
+}
+td.settings {
+    border: none; /*border-bottom: 1px solid #c9c3ba;*/
+    border-collapse: collapse;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+	color:inherited;
+	font-weight:normal;
+	max-width: 400px;
+	width: 320px;
+	vertical-align: bottom;
+	white-space: nowrap;
+}
+td.settings.no-border {
+    border: none;
+}
+td.settings.unselect {
+	color:grey;
+}
+td.settings.embedded {
+    border: none;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px
+}
+
+/* ************************** Settings input ******************************** */
+
+input.settings {
+    width: 100%;
+    margin: 13px 0px 0px 0px;
+}
+input.settings.button {
+    margin-top: 15px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    width: 85%; /*width: calc(100% - 0px);*/
+}
+input.settings.button.modal-button {
+    margin-top: 15px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    width:initial;
+}
+
+/* ************************** Settings select ******************************* */
+select.settings {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    vertical-align:middle;
+    font-size:13px;
+}
+
+/******************************************************************************/
+/* MODALS
+/******************************************************************************/
+
+/* ********************************* BASIC ********************************** */
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 40%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+.modal-header {
+    padding: 0px 7px 0px 7px;
+    background-color: #e8e2d7;
+    color: white;
+	height: 28px;
+}
+.modal-body {
+    padding: 20px 16px;
+    overflow-y: auto;
+}
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+.modal-close-span {
+    color: white;
+    float: right;
+    font-size: 14px;
+    font-weight: bold;
+}
+.modal-close-span:hover,
+.modal-close-span:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input.button.modal-button {
+    margin-top: 15px;
+    margin-right: 15px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    width:initial;
+}
+
+/* **************************** Alert extension ***************************** */
+.modal.alert {
+}
+.modal-content.alert {
+}
+.modal-header.alert {
+    background-color: #cc626a;
+}
+.modal-body.alert {
+}
+
+/* ************************** Settings extension **************************** */
+.modal.alert {
+}
+.modal-content.settings {
+}
+.modal-header.settings {
+    font-size: 14px;
+    text-align: center;
+    color:black;
+    padding: 7px 7px 0px 7px;
+}
+.modal-body.settings {
+}
+
+/******************************************************************************/
+/* DEMULTIPLEXER
+/******************************************************************************/
+.streamProc-h1 {
+    color: black;
+    font-size:14px;
+    font-weight: bold;
+}
+
+.streamProc {
+    color: black;
+    font-size:13px;
+}
+
+/* ***************************** Details UL ********************************* */
+ul.streamProc-details-dropdown {
+	padding: 13px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 100%;
+}
+ul.streamProc-details-dropdown li {
+	display: flex;
+}
+ul.streamProc-details-dropdown li a {
+	border: none;
+	color: inherit;
+	font-weight: bold;
+	text-decoration: none;
+	text-indent: 13px;
+	line-height: 0px;
+	white-space:nowrap;
+	margin-top: 14px;
+	/* Below lines are 'arrow-right-triangle' draw */
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;  
+	border-left: 14px solid black;
+}
+ul.streamProc-details-dropdown li a:hover {
+	background: none;
+	background-color: transparent;
+	font-weight: bold;
+}
+ul.streamProc-details-dropdown li a.selected {
+	/* Below lines are 'arrow-down-triangle' draw */
+	width: 0;
+	border-top: 14px solid black;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+}
+div.streamProc-details-dropdown-content {
+	border-left: 1px solid #c9c3ba;
+	padding-left: 7px;
+	margin-left: 6px; /* 6+1= 7px with the border */
+}
+div.streamProc-details-dropdown-content.hide {
+	display: none;
+}
+
+/* ********************** demultiplexer table ******************************* */
+table.streamProc {
+    border: none; /*1px solid #c9c3ba;*/
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    margin: 0 0 0 0;
+    padding: 0px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+td.streamProc {
+    border: none; /*border-bottom: 1px solid #c9c3ba;*/
+    border-collapse: collapse;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+	color:inherited;
+	font-weight:normal;
+	max-width: 400px;
+	width: 320px;
+	vertical-align: bottom;
+	white-space: nowrap;
+}
+
+/* *********************** demultiplexer settings *************************** */
+td.settings.embedded.streamProc-iurl-scheme {
+	width: 5em;
+}
+td.settings.embedded.streamProc-iurl-input {
+}
+
+/* ************************* demultiplexer traces *************************** */
+.traces {
+    color: black;
+    font-size:13px;
+}
+
+table.streamProc-traces {
+	width: 100%;
+    border: none;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+td.streamProc-traces {
+    border: 1px solid #c9c3ba;
+    text-align: left;
+}
+th.streamProc-traces {
+    text-align: left;
+}
+.tbody-traces-div {
+	height: 200px;
+	overflow-y: auto;
+	border: none;
+	background-color: rgb(227, 227, 227);
+}
+.tbody-traces-table {
+	border: none;
+}
+
+input.traces {
+    width: 100%;
+    margin: 13px 0px 0px 0px;
+}
+input.traces.button {
+    margin-top: 15px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    width: 272px; /* Same width as settings-button */
+}
+
+/******************************************************************************/
+/* PROGRAM
+/******************************************************************************/
+
+.program-h1 {
+    color: rgba(56,54,167,1);
+    font-size:14px;
+    font-weight: bold;
+}
+.program-h2 {
+    color: rgba(56,54,167,1);
+    font-size:13px;
+    font-weight: bold;
+}
+.program {
+    color: rgba(56,54,167,1);
+    font-size:13px;
+}
+
+ul.program-dropdown {
+	font-size: 85%;
+	list-style-type: none;
+	margin: 0 0 0 0;
+	padding: 0 0 0.3em 0;
+	background-color: rgba(182,181,242,1); /*#dedbde;*/
+	float:left;
+	width: 100%;
+}
+ul.program-dropdown li {
+	display: flex;
+}
+ul.program-dropdown li a {
+	color: #42454a;
+	border: 1px solid rgba(241,240,238,0.7); /*#c9c3ba;*/
+	border-bottom: none;
+	padding: 0.3em;
+	text-decoration: none;
+	width: 100%;
+}
+ul.program-dropdown li a:hover {
+	background: url(images/pattern.png) top left repeat;
+	background: url(images/icon_plus.png) 99% center no-repeat;
+	background-color: rgba(241,240,238,0.5); /*#f1f0ee;*/
+}
+ul.program-dropdown li a.selected {
+	color: #000;
+	background: url(images/icon_minus.png) 99% center no-repeat;
+	background-color: rgba(241,240,238,0.5); /*#f1f0ee;*/
+	font-weight: bold;
+	padding: 0.7em 0.3em 0.38em 0.3em;
+}
+div.program-dropdown-content {
+	border: 1px solid rgba(241,240,238,0.7); /*#c9c3ba*/
+	padding: 1em;
+	background-color: rgba(241,240,238,0.5); /*#EFEAE1*/
+}
+div.program-dropdown-content.hide {
+	display: none;
+}
+
+/* ***************************** Details UL ********************************* */
+ul.program-details-dropdown {
+	padding: 13px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 100%;
+}
+ul.program-details-dropdown li {
+	display: flex;
+}
+ul.program-details-dropdown li a {
+	border: none;
+	color: inherit;
+	font-weight: bold;
+	text-decoration: none;
+	text-indent: 13px;
+	line-height: 0px;
+	white-space:nowrap;
+	margin-top: 14px;
+	/* Below lines are 'arrow-right-triangle' draw */
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;  
+	border-left: 14px solid black;
+}
+ul.program-details-dropdown li a:hover {
+	background: none;
+	background-color: transparent;
+	font-weight: bold;
+}
+ul.program-details-dropdown li a.selected {
+	/* Below lines are 'arrow-down-triangle' draw */
+	width: 0;
+	border-top: 14px solid black;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+}
+div.program-details-dropdown-content {
+	border-left: 1px solid #c9c3ba;
+	padding-left: 7px;
+	margin-left: 6px; /* 6+1= 7px with the border */
+}
+div.program-details-dropdown-content.hide {
+	display: none;
+}
+
+/* ******************* Program modal settings extension ********************* */
+.modal.alert.program {
+}
+.modal-content.program.settings {
+	background-color: rgba(182,181,242,1);
+}
+.modal-header.program.settings {
+    font-size: 14px;
+    text-align: center;
+    color:inherit;
+    padding: 7px 7px 0px 7px;
+    background-color: rgba(182,181,242,1);
+}
+.modal-body.program.settings {
+    background-color: rgba(241,240,238,0.5);
+}
+
+/* ************************** Programs table ******************************** */
+table.program {
+    border: none; /*1px solid #c9c3ba;*/
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    margin: 0 0 0 0;
+    padding: 0px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+td.program {
+    border: none; /*border-bottom: 1px solid #c9c3ba;*/
+    border-collapse: collapse;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+	color:inherited;
+	font-weight:normal;
+	max-width: 400px;
+	width: 320px;
+	vertical-align: bottom;
+	white-space: nowrap;
+}
+
+/******************************************************************************/
+/* PROGRAM-PROCESSOR
+/******************************************************************************/
+
+/* *********************** Program-processor UL ***************************** */
+ul.program-proc-dropdown {
+	padding: 0px 0px 0px 0px;
+	margin: 13px 0px 0px 0px;
+	width: 100%;
+}
+ul.program-proc-dropdown li {
+	display: flex;
+}
+ul.program-proc-dropdown li a {
+	background: none;
+	border: none;
+	padding: 0 0 0 0;
+	color: inherit;
+	font-weight: bold;
+	text-decoration: none;
+	text-indent: 13px;
+	line-height: 0px;
+	white-space:nowrap;
+	margin-top: 14px;
+	/* Below lines are 'arrow-right-triangle' draw */
+	width: 0;
+	height: 0; 
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;  
+	border-left: 14px solid black;
+}
+ul.program-proc-dropdown li a:hover {
+	background: none;
+	background-color: transparent;
+	font-weight: bold;
+}
+ul.program-proc-dropdown li a.selected {
+	background: none;
+	padding: 0 0 0 0;
+	color: inherit;
+	/* Below lines are 'arrow-down-triangle' draw */
+	width: 0;
+	border-top: 14px solid black;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+}
+div.program-proc-dropdown-content {
+	border-left: 1px solid #c9c3ba;
+	padding: 7px;
+	margin-left: 6px; /* 6+1= 7px with the border */
+}
+div.program-proc-dropdown-content.hide {
+	display: none;
+}
+
+/* ******************** Program-processor settings ************************** */
+td.settings.embedded.program-proc-ourl-scheme {
+	width: 5em;
+}
+td.settings.embedded.program-proc-ourl-input {
+}
+
+/******************************************************************************/
+/* ELEMENTARY STREAMS
+/******************************************************************************/
+.es-h1 {
+    color: rgba(107,71,5,1);
+    font-size:14px;
+    font-weight: bold;
+}
+.es-h2 {
+    color: rgba(107,71,5,1);
+    font-size:13px;
+    font-weight: bold;
+}
+.es {
+    color: rgba(107,71,5,1);
+    font-size:13px;
+}
+
+/* ************** Elementary stream modal settings extension **************** */
+.modal-content.es.settings {
+	background-color: rgba(230, 211, 176, 1);
+}
+.modal-header.es.settings {
+    font-size: 14px;
+    text-align: center;
+    color:inherit;
+    padding: 7px 7px 0px 7px;
+    background-color: rgba(230, 211, 176, 1);
+}
+.modal-body.es.settings {
+    background-color: rgba(241,240,238,0.5);
+}
+select.es.settings {
+    width: 100%;
+    margin: 13px 0px 0px 0px;
+}
+
+/* **************** Elementary stream modal alert extension ***************** */
+.modal.alert.es {
+}
+
+/* ************ Elementary stream modal confirmation extension ************** */
+.modal-content.es.confirmation {
+	background-color: rgba(230, 211, 176, 1);
+}
+.modal-header.es.confirmation {
+    font-size: 14px;
+    text-align: center;
+    color:inherit;
+    padding: 7px 7px 0px 7px;
+    background-color: #cc626a;
+}
+
+/* *********************** Elementary stream UL ***************************** */
+ul.es-dropdown {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	background-color: rgba(230, 211, 176, 1);
+	width: 100%;
+}
+ul.es-dropdown li {
+}
+ul.es-dropdown li a {
+	color: rgba(107,71,5,1);
+	border: 1px solid rgba(241,240,238,0.7);
+	margin-bottom: -1px; /* To make UL border to really collapse */
+}
+ul.es-dropdown li a:hover {
+	background: url(images/pattern.png) top left repeat;
+	background: url(images/icon_plus.png) 99% center no-repeat;
+	background-color: rgba(241,240,238,0.5);
+}
+ul.es-dropdown li a.selected {
+	color: rgba(107,71,5,1);
+	background: url(images/icon_minus.png) 99% center no-repeat;
+	background-color: rgba(241,240,238,0.5);
+}
+div.es-dropdown-content {
+	padding: 14px;
+	background-color: rgba(241,240,238,0.5);
+}
+div.es-dropdown-content.hide {
+	display: none;
+}
+
+/******************************************************************************/
+/* ES-processor
+/******************************************************************************/
+
+/* ************************** ES-processor UL ****************************** */
+ul.es-proc-dropdown {
+	padding: 0px 0px 0px 0px;
+	margin: 13px 0px 0px 0px;
+	width: 100%;
+}
+ul.es-proc-dropdown li {
+	display: flex;
+}
+ul.es-proc-dropdown li a {
+	background: none;
+	border: none;
+	padding: 0 0 0 0;
+	color: inherit;
+	font-weight: bold;
+	text-decoration: none;
+	text-indent: 13px;
+	line-height: 0px;
+	white-space:nowrap;
+	margin-top: 14px;
+	/* Below lines are 'arrow-right-triangle' draw */
+	width: 0;
+	height: 0; 
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;  
+	border-left: 14px solid black;
+}
+ul.es-proc-dropdown li a:hover {
+	background: none;
+	background-color: transparent;
+	font-weight: bold;
+}
+ul.es-proc-dropdown li a.selected {
+	background: none;
+	padding: 0 0 0 0;
+	color: inherit;
+	/* Below lines are 'arrow-down-triangle' draw */
+	width: 0;
+	border-top: 14px solid black;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+}
+div.es-proc-dropdown-content {
+    border-left: 1px solid #c9c3ba;
+	padding: 7px;
+    margin-left: 6px; /* 6+1= 7px with the border */
+}
+div.es-proc-dropdown-content.hide {
+	display: none;
+}
+
+/* ********************** ES-processor details UL ************************** */
+ul.es-proc-details-dropdown {
+	padding: 13px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 100%;
+}
+ul.es-proc-details-dropdown li {
+	display: flex;
+}
+ul.es-proc-details-dropdown li a {
+	border: none;
+	color: inherit;
+	font-weight: bold;
+	text-decoration: none;
+	text-indent: 13px;
+	line-height: 0px;
+	white-space:nowrap;
+	margin-top: 14px;
+	/* Below lines are 'arrow-right-triangle' draw */
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;  
+	border-left: 14px solid black;
+}
+ul.es-proc-details-dropdown li a:hover {
+	background: none;
+	background-color: transparent;
+	font-weight: bold;
+}
+ul.es-proc-details-dropdown li a.selected {
+	/* Below lines are 'arrow-down-triangle' draw */
+	width: 0;
+	border-top: 14px solid black;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+}
+div.es-proc-details-dropdown-content {
+	border-left: 1px solid #c9c3ba;
+	padding-left: 7px;
+	margin-left: 6px; /* 6+1= 7px with the border */
+}
+div.es-proc-details-dropdown-content.hide {
+	display: none;
+}
+
+/* *********************** ES-processor settings *************************** */
+input.settings.es-proc-enable-output {
+	width: auto;
+}
+
+/* *********************** ES-processor table ****************************** */
+table.es {
+    border: none;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    margin: 0 0 0 0;
+    padding: 0px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+td.es {
+    border: none; /*border-bottom: 1px solid #c9c3ba;*/
+    border-collapse: collapse;
+    margin: 0px;
+    padding-top: 0px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    padding-left: 5px;
+	color:inherited;
+	font-weight:normal;
+	max-width: 400px;
+	width: 320px;
+	vertical-align: bottom;
+	white-space: nowrap;
+}
+
+td.es.es-proc-placeholder-time-stamps-selection {
+	vertical-align: middle;
+}
+
+td.es.es-proc-type-selection {
+	width: auto;
+	vertical-align: middle;
+}
+
+/******************************************************************************/
+/* DVB-SUBT-PROCESSOR
+/******************************************************************************/
+
+/* *********************** ES-processor settings *************************** */
+select.settings.dvb-subt-proc-desc-num {
+    width: auto;
+}
+
+input.settings.dvb-subt-proc-desc {
+	width: 100%;
+}
+
+select.settings.dvb-subt-proc-desc {
+    width: 100%;
+}
+
+input.settings.dvb-subt-proc-enable-display-window {
+	width: auto;
+}
+
+.settings.dvb-subt-proc-descr-sets-div {
+    background-color: rgba(241,240,238,0.5);
+}
+
+table.settings.dvb-subt-proc-filters {
+    border: none;
+    margin: 0px 0px 0px 6px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+caption.settings.dvb-subt-proc-filters {
+    margin: 13px 0px 7px 0px;
+}
+th.settings.dvb-subt-proc-filters {
+    border: 1px solid #c9c3ba;
+    border-collapse: collapse;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 7px 0px 7px;
+	color: #6b4724;
+	font-weight:normal;
+	max-width: 200px;
+	width: 120px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+td.settings.dvb-subt-proc-filters {
+    border: 1px solid #c9c3ba;
+    border-collapse: collapse;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 7px;
+	font-weight:normal;
+	max-width: 200px;
+	width: 120px;
+	vertical-align: middle;
+	text-align: center;
+	white-space: normal;
+	word-wrap: break-word;
+}
+input.settings.button.dvb-subt-proc-filters {
+    margin-top: 7px;
+    margin-right: 0px;
+    margin-bottom: 7px;
+    margin-left: 0px;
+    width: 85%;
+}
+
+table.settings.dvb-subt-proc-display-set {
+    border: none;
+    margin: 0px 0px 0px 6px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+caption.settings.dvb-subt-proc-display-set {
+    margin: 13px 0px 7px 0px;
+}
+th.settings.dvb-subt-proc-display-set {
+    border: 1px solid #c9c3ba;
+    border-collapse: collapse;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 7px 0px 7px;
+	color: #6b4724;
+	font-weight:normal;
+	max-width: 400px;
+	width: 320px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+td.settings.dvb-subt-proc-display-set {
+    border: 1px solid #c9c3ba;
+    border-collapse: collapse;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 7px;
+	font-weight:normal;
+	max-width: 400px;
+	width: 320px;
+	vertical-align: top;
+	text-align: left;
+	white-space: nowrap;
+}
+table.settings.dvb-subt-proc-display-set.display-set-subtable {
+    margin: -1px -1px -1px -8px;
+}
+th.settings.dvb-subt-proc-display-set.display-set-subtable {
+}
+td.settings.dvb-subt-proc-display-set.display-set-subtable {
+    color: grey;
+    text-align: center;
+}
+td.settings.dvb-subt-proc-display-set.dds-not-defined {
+	max-width: 640px;
+	width: 640px;
+    color: grey;
+    text-align: center;
+}

@@ -18,13 +18,13 @@
  */
 
 /**
- * @file psi_table_proc.h
+ * @file psi_proc.h
  * @brief Program Specific Information (PSI) processor.
  * @author Rafael Antoniello
  */
 
-#ifndef STREAMPROCESSORS_MPEG2TS_SRC_PSI_TABLE_PROC_H_
-#define STREAMPROCESSORS_MPEG2TS_SRC_PSI_TABLE_PROC_H_
+#ifndef STREAMPROCESSORS_MPEG2TS_SRC_PSI_PROC_H_
+#define STREAMPROCESSORS_MPEG2TS_SRC_PSI_PROC_H_
 
 /* **** Definitions **** */
 
@@ -39,4 +39,10 @@ typedef struct proc_if_s proc_if_t;
  */
 extern const proc_if_t proc_if_psi_table_proc;
 
-#endif /* STREAMPROCESSORS_MPEG2TS_SRC_PSI_TABLE_PROC_H_ */
+/**
+ * Processor interface implementing the
+ * MPEG2-TS Program Specific Information (PSI) section decoder/parser.
+ */
+extern const proc_if_t proc_if_psi_section_proc;
+
+#endif /* STREAMPROCESSORS_MPEG2TS_SRC_PSI_PROC_H_ */

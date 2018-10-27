@@ -18,7 +18,7 @@
  */
 
 /**
- * @file stream_procs_docs.c
+ * @file dbdriver_apps_procs_docs.c
  * @brief Data Base driver for the Stream Processors library.
  * @author Rafael Antoniello
  */
